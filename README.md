@@ -12,3 +12,7 @@ pip install SpeechRecognition
 pip install scikit-learn  
 pip install pyaudio  
 pip install pipwin  
+
+## Running the chatbot
+To run in a streamlit web app, please add the following line to your project terminal:  
+streamlit run main.py  
