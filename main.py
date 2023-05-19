@@ -5,11 +5,18 @@ import torch
 import speech_recognition as sr
 from sklearn.model_selection import train_test_split
 from transformers import BertTokenizer, BertForSequenceClassification
+<<<<<<< HEAD
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 
 # Setting up the web app page
 st.set_page_config(page_title="Medico Chatbot", page_icon=":robot_face:")
 st.title("Welcome to First Aid Recommendation Chatbot:alien:")
+=======
+
+#Setting up the web app page
+st.set_page_config(page_title="Medico Chatbot", page_icon=":robot_face:")
+st.title("Welcome to the First Aid responses App")
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 st.markdown("I can help you with your First Aid Questions.")
 
 # Define Confidence Threshold
@@ -31,20 +38,39 @@ def predict_intent(model, tokenizer, intent_labels, text):
 
     if confidence_score < confidence_threshold:
         predicted_tag = "unknown"
+<<<<<<< HEAD
 
+=======
+    #st.write("Predicted Tag",predicted_tag)
+    #st.write("Predicted Tag.lower",predicted_tag.lower())
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
     return predicted_tag.lower(), confidence_score
 
 
 # Define a function to get a random response based on intent tag
 def get_response(intents, intent_tag):
+<<<<<<< HEAD
     intent_data = next((item for item in intents if item["tag"].lower() == intent_tag), None)
+=======
+    #intent_data = next((item for item in intents if item["tag"] == intent), None)
+    #intent_tag = intent["tag"].lower()
+    #st.write(type(intent_tag))
+    intent_data = next((item for item in intents if item["tag"].lower() == intent_tag), None)
+    #intent_data = next((item for item in intents if (print(item["tag"]), item["tag"]) == (None, intent_tag)), None)
+    #st.write("Intent Tag", intent_tag)
+    #st.write(intent_data)
+    #st.write("item['tag']",intents["tag"])
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
     if intent_data:
         responses = intent_data['responses']
         return random.choice(responses)
     else:
         return "I'm sorry, I didn't understand what you meant."
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 def transcribe_speech():
     # Create a recognizer object
     r = sr.Recognizer()
@@ -53,10 +79,17 @@ def transcribe_speech():
     with sr.Microphone() as source:
         # Adjust for ambient noise
         r.adjust_for_ambient_noise(source)
+<<<<<<< HEAD
 
         # Listen for the user's input
         audio = r.listen(source)
 
+=======
+        
+        # Listen for the user's input
+        audio = r.listen(source)
+    
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
     try:
         # Use Google Speech Recognition to transcribe the audio
         text = r.recognize_google(audio)
@@ -64,16 +97,23 @@ def transcribe_speech():
     except sr.UnknownValueError:
         return "Sorry, I didn't catch that. Could you please repeat?"
     except sr.RequestError:
+<<<<<<< HEAD
         return "Sorry, there was an error processing your request. Please try again."
 
 
 # Defining the main function to load the model.
+=======
+        return "Sorry, there was an error processing your request. Please try again."        
+
+#Defining the main function to load the model.
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 @st.cache_resource
 def load_model():
     # Load intents from JSON file
     with open('intents.json', 'r') as f:
         dataset = json.load(f)['intents']
 
+<<<<<<< HEAD
     # Split dataset into training and test sets
     train_data, test_data = train_test_split(dataset, test_size=0.1, random_state=42)
 
@@ -82,6 +122,10 @@ def load_model():
 
     # Split training data into training and validation sets
     train_data, val_data = train_test_split(train_data, test_size=0.1, random_state=42)
+=======
+    # Split dataset into training and validation sets
+    train_data, val_data = train_test_split(dataset, test_size=0.2, random_state=42)
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 
     # Load BERT tokenizer
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -97,11 +141,19 @@ def load_model():
 
     # Tokenize and encode training data
     batch_size = 16
+<<<<<<< HEAD
     epoch_size = 1
     train_encodings = tokenizer([data[0] for data in training_data], truncation=True, padding=True, return_tensors='pt')
 
     # Extract all unique intent tags from the combined dataset
     intent_labels = list(set([data['tag'] for data in combined_data]))
+=======
+    epoch_size = 10
+    train_encodings = tokenizer([data[0] for data in training_data], truncation=True, padding=True, return_tensors='pt')
+
+    # Extract all unique intent tags from the dataset
+    intent_labels = list(set([data[1] for data in training_data]))
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 
     train_labels = torch.tensor([intent_labels.index(data[1]) for data in training_data])
 
@@ -114,11 +166,14 @@ def load_model():
     # Define optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
 
+<<<<<<< HEAD
     # Early stopping variables
     patience = 3
     best_loss = float('inf')
     epochs_without_improvement = 0
 
+=======
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
     # Train the model
     model.train()
     for epoch in range(epoch_size):
@@ -135,6 +190,7 @@ def load_model():
         avg_loss = total_loss / (len(training_data) / batch_size)
         print(f"Epoch: {epoch+1} Average training loss: {avg_loss}")
 
+<<<<<<< HEAD
         # Check for early stopping
         if avg_loss < best_loss:
             best_loss = avg_loss
@@ -145,11 +201,14 @@ def load_model():
                 print(f"Early stopping triggered after {epoch+1} epochs.")
                 break
 
+=======
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
     # Save the trained model
     model.save_pretrained('bert-model')
 
     # Set the model to evaluation mode
     model.eval()
+<<<<<<< HEAD
     #test_patterns = [data['patterns'] for data in test_data]
     test_patterns = [data['patterns'][0] for data in test_data]
     test_encodings = tokenizer(
@@ -171,10 +230,15 @@ def load_model():
     test_predictions = [intent_labels[idx] for idx in test_predictions_indices if idx < len(intent_labels)]
 
     return model, tokenizer, intent_labels, train_data, val_data, test_data, test_labels, test_predictions
+=======
+
+    return model, tokenizer, intent_labels, dataset
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 
 # Define the Streamlit app
 def app():
     # Load the model, tokenizer, and intent labels
+<<<<<<< HEAD
     model, tokenizer, intent_labels, train_data, _, test_data, test_labels, test_predictions = load_model()
 
     # Define a Boolean variable to track whether to show the performance metrics
@@ -228,6 +292,29 @@ def app():
     st.write(test_predictions)
     st.write(test_labels)
     st.write(intent_labels)
+=======
+    model, tokenizer, intent_labels, dataset = load_model()
+
+    #Take user input via text
+    user_input = st.text_input("Enter your question")
+
+    # Create a button to start listening for speech
+    if st.button("Click here to start speaking 🎤"):
+        st.write("Listening...")
+        user_input = transcribe_speech()
+    
+    st.write("User:", user_input)
+    intent_tag, confidence_score = predict_intent(model, tokenizer, intent_labels, user_input)
+    #st.write("Predicted tag:", intent_tag)
+    #st.write("Dataset", dataset)
+    #st.write("Intent Labels", intent_labels)
+    response = get_response(dataset, intent_tag)
+    #st.write(confidence_score)
+    if user_input=="":
+        st.write("Bot: Hello there! What can I do for you today?")
+    else:
+        st.write("Bot:", response)
+>>>>>>> c549f04ad47d77ce3c488469a032e1f560539964
 
 if __name__ == '__main__':
     app()
